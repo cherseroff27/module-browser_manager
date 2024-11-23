@@ -1,0 +1,8 @@
+setup.py
+browser_manager/__init__.py
+browser_manager/browser_manager.py
+browser_manager.egg-info/PKG-INFO
+browser_manager.egg-info/SOURCES.txt
+browser_manager.egg-info/dependency_links.txt
+browser_manager.egg-info/requires.txt
+browser_manager.egg-info/top_level.txt
