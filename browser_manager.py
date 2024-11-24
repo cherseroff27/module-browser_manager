@@ -9,19 +9,30 @@ from selenium_stealth import stealth
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-# Библиотека из my_utils
-
+# Модуль из my_utils/modules
 class BrowserManager:
     def __init__(self, proxy_manager=None, user_agent=None):
-        self.isAuthBrowserProfile = None
         self.driver = None
         self.proxy_manager = proxy_manager
         self.user_agent = user_agent
 
 
-    def create_webdriver(self, browser_profiles_dir, profile_name, use_profile_folder=False,
-                      use_proxy=False, use_stealth=False):
+    def initialize_webdriver(
+            self,
+            browser_profiles_dir=None,
+            profile_name=None,
+            use_profile_folder=False,
+            use_proxy=False,
+            use_stealth=False
+    ):
         try:
+            if use_profile_folder:
+                # Проверяем, что параметры, связанные с профилем, переданы
+                if not browser_profiles_dir or not profile_name:
+                    raise ValueError(
+                        "Если 'use_profile_folder=True', необходимо указать 'browser_profiles_dir' и 'profile_name'."
+                    )
+
             chrome_options = webdriver.ChromeOptions()
             service = Service(ChromeDriverManager().install())
 
@@ -75,16 +86,14 @@ class BrowserManager:
         except Exception as ex:
             print(ex)
 
-
-    def get_profile_directory(self, profile_dir):
+    @staticmethod
+    def get_profile_directory(profile_dir):
         if not os.path.exists(profile_dir):
             os.makedirs(profile_dir, exist_ok=True)
-            self.isAuthBrowserProfile = False
             print(f"Успешно создал новую папку профиля браузера в директории проекта. Чиназес.\n"
                   f"Путь к папке профиля - {profile_dir}")
             return profile_dir
         else:
-            self.isAuthBrowserProfile = True
             print(f"Папка профиля браузера уже существует. Чивапчис.\n"
                   f"Путь к папке профиля - {profile_dir}")
             return profile_dir
