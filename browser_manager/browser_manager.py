@@ -11,10 +11,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Модуль из my_utils/modules
 class BrowserManager:
-    def __init__(self, proxy_manager=None, user_agent=None):
+    def __init__(self, proxy_extension_manager=None, user_agent=None, extension_path=None, driver_path=None):
         self.driver = None
-        self.proxy_manager = proxy_manager
+        self.driver_path = driver_path
         self.user_agent = user_agent
+        self.extension_path = extension_path
+        self.proxy_extension_manager = proxy_extension_manager
 
 
     def initialize_webdriver(
@@ -22,7 +24,8 @@ class BrowserManager:
             browser_profiles_dir=None,
             profile_name=None,
             use_profile_folder=False,
-            use_proxy=False,
+            use_inject_extension=False,
+            use_proxy_extension=False,
             use_stealth=False
     ):
         try:
@@ -42,11 +45,15 @@ class BrowserManager:
                 self.get_profile_directory(profile_dir)
                 chrome_options.add_argument(f"--user-data-dir={profile_dir}")
 
-            if use_proxy and self.proxy_manager is not None:
-                plugin_file = self.proxy_manager.create_extension()
-                chrome_options.add_extension(plugin_file)
-            else:
+            if not use_proxy_extension and not use_inject_extension:
                 chrome_options.add_argument("--disable-extensions")
+
+            if use_proxy_extension and self.proxy_extension_manager is not None:
+                extension_file = self.proxy_extension_manager.create_extension()
+                chrome_options.add_extension(extension_file)
+
+            if use_inject_extension:
+                chrome_options.add_extension(self.extension_path)
 
             if self.user_agent is not None:
                 chrome_options.add_argument(f'--user-agent={self.user_agent}')
